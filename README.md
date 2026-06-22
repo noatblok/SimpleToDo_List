@@ -10,7 +10,7 @@ Get the latest release from releases or the bleeding edge changes from github ac
 
 #### Why?
 
-It's a nice first full project, eventually I might make it into a GUI too.
+It's a nice first full project.
 
 #### Has anyone ever actually asked any questions about this?
 
