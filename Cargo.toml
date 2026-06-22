@@ -5,4 +5,5 @@ edition = "2024"
 
 [dependencies]
 clearscreen = "4.0.6"
+eframe = "0.34.3"
 inquire = "0.9.4"
