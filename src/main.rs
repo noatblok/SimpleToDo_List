@@ -1,8 +1,12 @@
 use inquire::{Text, Select};
 
 const MENU_CHOICES: [&str; 4] = ["Add Item", "Remove Item", "List Items", "Exit"];
+struct ToDoItem {
+    task: String,
+    completed: bool
+}
 fn main() {
-    let mut items: Vec<String> = vec![];
+    let mut items: Vec<ToDoItem> = vec![];
     loop {
         let ans = Select::new("What would you like to do?", MENU_CHOICES.to_vec())
             .prompt();
@@ -21,30 +25,29 @@ fn main() {
     }
 }
 
-fn add_item(items: &mut Vec<String>) {
+fn add_item(items: &mut Vec<ToDoItem>) {
     clearscreen::clear().expect("Something went wrong clearing the terminal");
     let ans = Text::new("What would you like to add?")
         .prompt();
     match ans {
         Ok(answer) => {
-            items.push(answer)
+            items.push(ToDoItem{task: answer, completed: false})
         },
         Err(_) => println!("An error occured, try again.")
     }
 }
 
-fn remove_item(items: &mut Vec<String>) {
+fn remove_item(items: &mut Vec<ToDoItem>) {
     clearscreen::clear().expect("Something went wrong clearing the terminal");
-    let choice = Select::new("What would you like to remove?", items.clone()).prompt();
+    let mut itemlist: Vec<&str> = vec![];
+    for item in items.iter() {
+        itemlist.push(&item.task)
+    }
+
+    let choice = Select::new("What would you like to remove?", itemlist).prompt();
     match choice {
         Ok(selected_item) => {
-            let mut removal_index = usize::MAX;
-            for i in 0..items.iter().len() {
-                if items[i] == selected_item {
-                    removal_index = i;
-                }
-            }
-            if removal_index != usize::MAX {
+            if let Some(removal_index) = items.iter().position(|item| item.task == selected_item) {
                 items.remove(removal_index);
             } else {
                 println!("You fucked up... Somehow")
@@ -54,8 +57,18 @@ fn remove_item(items: &mut Vec<String>) {
     }
 }
 
-fn list_items(items: &Vec<String>) {
+fn list_items(items: &Vec<ToDoItem>) {
     clearscreen::clear().expect("Something went wrong clearing the terminal");
-    let out_text = items.join(", ");
-    println!("Your list contains: \n {}", out_text);
+    let mut out_text = String::new();
+    let mut i = 0;
+    for item in items {
+        let mut toadd = "";
+        if i != items.iter().len() - 1 {
+            toadd = "\n"
+        }
+        out_text.push_str(&format!("{}{}", &item.task, toadd));
+        i += 1
+    }
+
+    println!("Your list contains:\n{}", out_text);
 }
