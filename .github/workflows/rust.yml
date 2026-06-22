@@ -74,4 +74,4 @@ jobs:
       with:
         name: ${{ env.PROJECT_NAME }}-latest-${{ matrix.target }}
         path: ${{ github.workspace }}/${{ env.PROJECT_NAME }}-*
-        retention-days: 5
+        retention-days: 30
