@@ -1,5 +1,5 @@
 use eframe::egui;
-use std::ops::Not;
+use std::{ops::Not};
 
 fn main() {
     let native_options = eframe::NativeOptions { // For if I want to change stuff here later
@@ -52,12 +52,14 @@ impl eframe::App for TODOEguiApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show_inside(ui, |ui| {
             ui.heading("To-Do App");
-            ui.text_edit_singleline(&mut self.task_buf);
-            if ui.button("Add").clicked() {
+            let task_input = ui.text_edit_singleline(&mut self.task_buf);
+            let enter = task_input.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter));
+            if ui.button("Add").clicked() || enter {
                 self.tasks.push(Task{
                     name: self.task_buf.clone(),
                     status: TaskStatus::Incomplete
                 });
+                self.task_buf.clear();
             }
             let mut task_index: usize = 0;
             let mut to_remove: Vec<usize> = vec![];
