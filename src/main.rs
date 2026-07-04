@@ -1,5 +1,6 @@
 use eframe::egui;
 use std::{ops::Not};
+use serde::{Deserialize, Serialize};
 
 fn main() {
     let native_options = eframe::NativeOptions { // For if I want to change stuff here later
@@ -15,7 +16,7 @@ fn main() {
     ).expect("An error occured");
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 enum TaskStatus {
     Complete,
     Incomplete
@@ -30,25 +31,34 @@ impl Not for TaskStatus {
         }
     }
 }
-
+#[derive(Serialize, Deserialize)]
 struct Task {
     name: String,
     status: TaskStatus
 }
 
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize)]
 struct TODOEguiApp {
     task_buf: String,
     tasks: Vec<Task>
 }
 
 impl TODOEguiApp {
-    fn new(_cc: &eframe::CreationContext<'_>) -> Self {
+    fn new(cc: &eframe::CreationContext<'_>) -> Self {
+
+        if let Some(storage) = cc.storage {
+            if let Some(state) = eframe::get_value(storage, eframe::APP_KEY) {
+                return state;
+            }
+        }
         Self::default()
     }
 }
 
 impl eframe::App for TODOEguiApp {
+    fn save(&mut self, storage: &mut dyn eframe::Storage) {
+        eframe::set_value(storage, eframe::APP_KEY, self);
+    }
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show_inside(ui, |ui| {
             ui.heading("To-Do App");
