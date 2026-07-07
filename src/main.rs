@@ -1,4 +1,4 @@
-use eframe::egui;
+use eframe::egui::{self, RichText, Color32};
 use std::{ops::Not};
 use serde::{Deserialize, Serialize};
 
@@ -61,7 +61,7 @@ impl eframe::App for TODOEguiApp {
     }
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show_inside(ui, |ui| {
-            ui.heading("To-Do App");
+            ui.label(RichText::new("ToDo App").size(38.0));
             let task_input = ui.text_edit_singleline(&mut self.task_buf);
             let enter = task_input.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter));
             if ui.button("Add").clicked() || enter {
@@ -75,8 +75,8 @@ impl eframe::App for TODOEguiApp {
             let mut to_remove: Vec<usize> = vec![];
             let mut to_toggle: Vec<usize> = vec![];
             for task in &mut self.tasks {
-                ui.horizontal(|ui| {
-                    ui.label(format!("{} - {:?}", task.name, task.status));
+                ui.horizontal(|ui| { 
+                    ui.label(RichText::new(format!("{} - {:?}", task.name, task.status)));
                     if ui.button("Delete").clicked() {
                         to_remove.push(task_index);
                     }
